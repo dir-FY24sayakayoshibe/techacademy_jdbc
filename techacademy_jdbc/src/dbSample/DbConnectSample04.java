@@ -1,7 +1,11 @@
 package dbSample;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DbConnectSample02 {
+public class DbConnectSample04 {
     
 
 
@@ -18,7 +22,7 @@ public class DbConnectSample02 {
       
         //データベース接続と結果取得のための変数
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
         ResultSet rs = null;
         
      try {
@@ -32,37 +36,30 @@ public class DbConnectSample02 {
                 "Sayapy2525!"
               );
         
-        //3.DBとやり取りする窓口（Statementオブジェクト）の作成
-        stmt = con.createStatement();
-        
-        //4.5.Select文の実行と結果を格納/代入
-        String sql = "SELECT * FROM country LIMIT 50";
-        rs = stmt.executeQuery(sql);
-        
-        //6.結果を表示する
-        while( rs.next()) {
-            //Name例の値を取得
-            String name = rs.getString("Name");
-            //Population列の値を取得
-            int population = rs.getInt("Population");
-            
-          
-            //取得した値を表示
-            System.out.println(name);
-            System.out.println(population);
-        }
-           
-            //6-1.データの更新を行う
-            sql = "update country set Population = 105000 where Code = 'ABW'";
-            int count = stmt.executeUpdate(sql);
-            System.out.println(count);
+                String sql = "SELECT * FROM country WHERE Name = ?";
 
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-       
         
-        catch (SQLException e) {
+        //3.DBとやり取りする窓口（Statementオブジェクト）の作成
+        pstmt = con.prepareStatement(sql);
+        
+        //4.5.6.UPDATEの実行と結果を格納／代入
+        System.out.print("CountryCodeを入力してください > ");
+        String str1 = keyIn();
+
+        System.out.print("Populationを数字で入力してください > ");
+        int num1 = Integer.parseInt(keyIn());
+
+        pstmt.setString(1, str1);
+        pstmt.setInt(2, num1);
+
+        int count = pstmt.executeUpdate();
+        System.out.println(count);
+       
+     } catch (ClassNotFoundException e) {
+         System.err.println("JDBCドライバのロードに失敗しました。");
+         e.printStackTrace();
+         
+     }catch (SQLException e) {
          System.err.println("データベースに異常が発生しました。");
          e.printStackTrace();
      }finally {
@@ -75,9 +72,9 @@ public class DbConnectSample02 {
                  e.printStackTrace();
              }
          }
-         if( stmt != null ){
+         if( pstmt != null ){
              try {
-                 stmt.close();
+                 pstmt.close();
              } catch (SQLException e) {
                  System.err.println("Statementを閉じるときにエラーが発生しました。");
                  e.printStackTrace();
@@ -94,14 +91,22 @@ public class DbConnectSample02 {
              }
              
          }
-             
+     }     
      }
-     
-    }
-}
+/*
+ * キーボードから入力された値をStringで返す 引数：なし 戻り値：入力された文字列
+ */
+private static String keyIn() {
+        String line = null;
+        try {
+                BufferedReader key = new BufferedReader(new InputStreamReader(System.in));
+                line = key.readLine();
+        } catch (IOException e) {
 
-     
-     
+        }
+        return line;
+}
+    }
      
 
 

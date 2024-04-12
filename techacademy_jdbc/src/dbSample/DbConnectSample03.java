@@ -1,5 +1,8 @@
 package dbSample;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -10,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DbConnectSample02 {
+public class DbConnectSample03 {
     
 
 
@@ -36,7 +39,10 @@ public class DbConnectSample02 {
         stmt = con.createStatement();
         
         //4.5.Select文の実行と結果を格納/代入
-        String sql = "SELECT * FROM country LIMIT 50";
+        System.out.print("検索キーワードを入力してください > ");
+        String input = keyIn();  
+
+        String sql = "select * from country where Name = '" + input + "'";
         rs = stmt.executeQuery(sql);
         
         //6.結果を表示する
@@ -51,18 +57,11 @@ public class DbConnectSample02 {
             System.out.println(name);
             System.out.println(population);
         }
-           
-            //6-1.データの更新を行う
-            sql = "update country set Population = 105000 where Code = 'ABW'";
-            int count = stmt.executeUpdate(sql);
-            System.out.println(count);
-
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-       
-        
-        catch (SQLException e) {
+     } catch (ClassNotFoundException e) {
+         System.err.println("JDBCドライバのロードに失敗しました。");
+         e.printStackTrace();
+         
+     }catch (SQLException e) {
          System.err.println("データベースに異常が発生しました。");
          e.printStackTrace();
      }finally {
@@ -94,14 +93,22 @@ public class DbConnectSample02 {
              }
              
          }
-             
+     }     
      }
-     
-    }
-}
+/*
+ * キーボードから入力された値をStringで返す 引数：なし 戻り値：入力された文字列
+ */
+private static String keyIn() {
+        String line = null;
+        try {
+                BufferedReader key = new BufferedReader(new InputStreamReader(System.in));
+                line = key.readLine();
+        } catch (IOException e) {
 
-     
-     
+        }
+        return line;
+}
+    }
      
 
 
