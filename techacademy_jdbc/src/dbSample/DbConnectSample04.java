@@ -87,7 +87,7 @@ public class DbConnectSample04 {
                  con.close();
              }catch (SQLException e) {
                  System.err.println("データベース切断時にエラーが発生しました。");
-                 e.printStackTrace();
+                 
              }
              
          }
